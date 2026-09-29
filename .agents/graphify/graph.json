@@ -1,0 +1,91 @@
+{
+  "nodes": [
+    {
+      "id": "Database",
+      "type": "infrastructure",
+      "file": "src/db/database.ts"
+    },
+    {
+      "id": "Seed",
+      "type": "data",
+      "file": "src/db/seed.ts"
+    },
+    {
+      "id": "BookingService",
+      "type": "service",
+      "file": "src/services/booking-service.ts"
+    },
+    {
+      "id": "PaymentService",
+      "type": "service",
+      "file": "src/services/payment-service.ts"
+    },
+    {
+      "id": "RosterService",
+      "type": "service",
+      "file": "src/services/roster-service.ts"
+    },
+    {
+      "id": "RosterExportService",
+      "type": "service",
+      "file": "src/utils/RosterExport.ts"
+    },
+    {
+      "id": "ExpressServer",
+      "type": "api_gateway",
+      "file": "src/server.ts"
+    },
+    {
+      "id": "BookingTests",
+      "type": "test_suite",
+      "file": "tests/booking.test.ts"
+    },
+    {
+      "id": "RaceConditionTests",
+      "type": "test_suite",
+      "file": "tests/race-condition.test.ts"
+    }
+  ],
+  "edges": [
+    {
+      "from": "BookingService",
+      "to": "Database",
+      "label": "executes_atomic_transaction"
+    },
+    {
+      "from": "BookingService",
+      "to": "PaymentService",
+      "label": "dispatches_payment_and_refund"
+    },
+    {
+      "from": "RosterService",
+      "to": "Database",
+      "label": "queries_confirmed_students"
+    },
+    {
+      "from": "ExpressServer",
+      "to": "BookingService",
+      "label": "routes_post_bookings"
+    },
+    {
+      "from": "ExpressServer",
+      "to": "RosterService",
+      "label": "routes_get_roster"
+    },
+    {
+      "from": "ExpressServer",
+      "to": "RosterExportService",
+      "label": "exports_markdown_roster"
+    },
+    {
+      "from": "BookingTests",
+      "to": "BookingService",
+      "label": "verifies_invariants"
+    },
+    {
+      "from": "RaceConditionTests",
+      "to": "BookingService",
+      "label": "verifies_last_seat_race"
+    }
+  ]
+}
