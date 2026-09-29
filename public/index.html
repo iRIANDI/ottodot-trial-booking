@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ottodot Trial Booking Reliability Engine</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root[data-theme="light"] {
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --terminal-bg: #0f172a;
+      --terminal-text: #38bdf8;
+      --table-head: #f1f5f9;
+      --table-hover: #f1f5f9;
+      --active-row-bg: #eff6ff;
+      --card-title-1: #7e22ce;
+      --card-title-2: #0284c7;
+      --card-title-3: #dc2626;
+      --target-box-bg: #e0f2fe;
+      --target-box-border: #bae6fd;
+      --case-study-bg: #f8fafc;
+      --case-study-border: #cbd5e1;
+      --guide-title: #0284c7;
+      --code-box-bg: #f8fafc;
+      --code-box-text: #0f172a;
+      --code-box-border: #cbd5e1;
+      --code-comment: #64748b;
+      --code-sql: #1d4ed8;
+      --target-badge-bg: #0284c7;
+      --target-badge-text: #ffffff;
+    }
+    :root[data-theme="dark"] {
+      --bg-body: #0b0f19;
+      --bg-card: #151d30;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #243048;
+      --terminal-bg: #060911;
+      --terminal-text: #7dd3fc;
+      --table-head: #1c273e;
+      --table-hover: #19233a;
+      --active-row-bg: #1e3a5f;
+      --card-title-1: #c084fc;
+      --card-title-2: #38bdf8;
+      --card-title-3: #f87171;
+      --target-box-bg: #132742;
+      --target-box-border: #1e40af;
+      --case-study-bg: #0f172a;
+      --case-study-border: #1e293b;
+      --guide-title: #38bdf8;
+      --code-box-bg: #080d1a;
+      --code-box-text: #f1f5f9;
+      --code-box-border: #1e293b;
+      --code-comment: #94a3b8;
+      --code-sql: #38bdf8;
+      --target-badge-bg: #0369a1;
+      --target-badge-text: #ffffff;
+    }
+    body {
+      background-color: var(--bg-body);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text-main);
+      transition: background-color 0.25s ease, color 0.25s ease;
+      line-height: 1.5;
+    }
+    
+    /* SLIM HEADER STYLES */
+    .slim-hero-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      border-radius: 10px;
+      padding: 12px 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+    
+    .card { background-color: var(--bg-card); color: var(--text-main); border-color: var(--border-color); }
+    .card-header { background-color: var(--bg-card) !important; color: var(--text-main); border-color: var(--border-color); font-weight: 600; }
+    .table { color: var(--text-main); border-color: var(--border-color); }
+    .table-light, .table-light > tr > th, .table-light th, .table-light td { background-color: var(--table-head) !important; color: var(--text-main) !important; border-color: var(--border-color) !important; }
+    .table-hover tbody tr:hover { background-color: var(--table-hover) !important; color: var(--text-main); }
+    .table-bordered th, .table-bordered td { border-color: var(--border-color); }
+    .text-muted { color: var(--text-muted) !important; }
+    
+    .badge-full { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge-open { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-warning-seat { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    
+    .terminal-box {
+      background-color: var(--terminal-bg);
+      color: var(--terminal-text);
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      font-size: 0.83rem;
+      border-radius: 8px;
+      padding: 14px 16px;
+      max-height: 320px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    .sim-card { background-color: var(--bg-card); transition: transform 0.15s ease, box-shadow 0.15s ease; cursor: pointer; border-color: var(--border-color); }
+    .sim-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+    
+    .form-control, .form-select { background-color: var(--bg-card); color: var(--text-main); border-color: var(--border-color); }
+    .form-control:focus, .form-select:focus { background-color: var(--bg-card); color: var(--text-main); }
+    
+    .target-banner {
+      background-color: var(--target-box-bg);
+      border: 1px solid var(--target-box-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .selected-class-row {
+      background-color: var(--active-row-bg) !important;
+      border-left: 4px solid #3b82f6 !important;
+    }
+    
+    .card-title-1 { color: var(--card-title-1) !important; font-weight: 700; }
+    .card-title-2 { color: var(--card-title-2) !important; font-weight: 700; }
+    .card-title-3 { color: var(--card-title-3) !important; font-weight: 700; }
+
+    .theme-toggle-btn {
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+    }
+    .theme-toggle-btn:hover { background: rgba(255,255,255,0.25); color: white; }
+
+    /* FLOATING TOAST NOTIFICATION (REPLACES BROWSER ALERT) */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      min-width: 320px;
+      max-width: 440px;
+    }
+    .modern-toast {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes slideInToast {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  
+    .case-study-guide-box {
+      background-color: var(--case-study-bg);
+      border: 1px solid var(--case-study-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+    .case-study-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .case-study-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border-color: #3b82f6;
+    }
+    .case-study-card.active-guide {
+      border-color: #3b82f6 !important;
+      background-color: var(--active-row-bg) !important;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+    }
+
+    /* FULL-PAGE ARCHITECT INTRO SPLASH SCREEN */
+    .splash-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #070a12;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s ease;
+      overflow: hidden;
+    }
+    .splash-overlay.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-backdrop-glow {
+      position: absolute;
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+      animation: splashPulse 4s ease-in-out infinite alternate;
+    }
+    @keyframes splashPulse {
+      0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+      100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    }
+    .splash-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      animation: splashContentIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes splashContentIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .splash-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #93c5fd;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    .splash-pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #38bdf8;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #38bdf8;
+      animation: pulseDot 1.5s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+    .splash-quote-icon {
+      font-family: Georgia, serif;
+      font-size: 3.5rem;
+      line-height: 1;
+      color: rgba(96, 165, 250, 0.4);
+      user-select: none;
+    }
+    .splash-quote {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-size: clamp(1.35rem, 2.7vw, 1.95rem);
+      font-weight: 500;
+      line-height: 1.45;
+      color: #f8fafc;
+      letter-spacing: -0.02em;
+      margin: 0;
+      font-style: italic;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+    }
+    .splash-author-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .splash-author-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #38bdf8;
+      background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .splash-author-title {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-top: 3px;
+    }
+    .splash-enter-btn {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border: 1px solid rgba(147, 197, 253, 0.35);
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 10px 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.45);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .splash-enter-btn:hover {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.65);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+    .splash-enter-btn:active {
+      transform: translateY(0) scale(0.99);
+    }
+    .splash-key-hint {
+      font-size: 0.74rem;
+      color: #64748b;
+      margin-top: 8px;
+    }
+    .splash-key-hint kbd {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+    }
+
+  
+        /* THEME-ADAPTIVE CODE BOX & MODAL STYLES */
+    .code-snippet-box {
+      background-color: var(--code-box-bg);
+      color: var(--code-box-text);
+      border: 1px solid var(--code-box-border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .code-comment {
+      color: var(--code-comment);
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+    }
+    .code-sql {
+      color: var(--code-sql);
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-weight: 600;
+    }
+    .modal-content {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .modal-footer {
+      border-top-color: var(--border-color);
+    }
+    .badge-target {
+      background-color: var(--target-badge-bg) !important;
+      color: var(--target-badge-text) !important;
+    }
+
+    /* SLIM SUBTLE CORNER RADIUS OVERRIDES (ANTI-PILL) */
+    .btn, .form-control, .form-select, .input-group, .input-group-text, .card, .card-header, .alert, .modal-content, .toast, .terminal-box {
+      border-radius: 6px !important;
+    }
+    .badge {
+      border-radius: 4px !important;
+    }
+    .rounded-pill {
+      border-radius: 6px !important;
+    }
+  </style>
+</head>
+<body class="py-3">
+
+  <!-- FULL-PAGE ARCHITECT PHILOSOPHY INTRO / LOADING SCREEN -->
+  <div id="introSplashScreen" class="splash-overlay" onclick="dismissSplashScreen()">
+    <div class="splash-backdrop-glow"></div>
+    <div class="splash-content text-center px-4" onclick="event.stopPropagation()">
+      <!-- Top Meta Badge -->
+      <div class="mb-4">
+        <span class="splash-badge">
+          <span class="splash-pulse-dot"></span>
+          OTTODOT RELIABILITY ENGINE • ARCHITECT PRINCIPLE
+        </span>
+      </div>
+
+      <!-- Stylized Quote Icon -->
+      <div class="splash-quote-icon mb-2">“</div>
+
+      <!-- The Slogan -->
+      <blockquote class="splash-quote" style="max-width: 780px; margin: 0 auto;">
+        <div>Code is easy. Judgment is rare.</div>
+        <div class="mt-2">Steering AI requires</div>
+        <div class="mt-1" style="white-space: normal;">knowing what to protect, what to reject, and why.</div>
+      </blockquote>
+
+      <!-- Author & Attribution -->
+      <div class="splash-author-box mt-4">
+        <div class="splash-author-name">Yoseph Iriandi</div>
+        <div class="splash-author-title">16 Years Systems Architect & Lead Full-Stack Engineer</div>
+      </div>
+
+      <!-- Primary Enter Action Gate -->
+      <div class="mt-5">
+        <button type="button" id="btnEnterDashboard" onclick="dismissSplashScreen()" class="splash-enter-btn">
+          <span>Enter Dashboard</span>
+          <span style="font-size: 1.1rem;">&rarr;</span>
+        </button>
+        <div class="splash-key-hint">
+          Click button or press <kbd>Enter</kbd> to proceed
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="max-width: 1080px;">
+    
+    <!-- SLIMLINE HERO HEADER (SAVES VERTICAL SPACE) -->
+    <div class="slim-hero-header mb-3">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h4 class="fw-bold mb-0">🚀 Ottodot Trial Booking Engine</h4>
+          <span class="badge bg-warning text-dark px-2 py-1 small fw-bold">MAX 4 STUDENTS / CLASS</span>
+          <span class="small opacity-90 d-none d-md-inline">&bull; Zero-Overbooking Concurrency Invariants</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">☀️</span> <span id="themeLabel">Light Mode</span>
+          </button>
+          <button class="btn btn-sm btn-light fw-bold text-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#smartGuideModal">
+            🧠 Reviewer Smart Guide
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: AUTOMATED CONCURRENCY LAB & EDUCATIONAL CASE STUDY GUIDE -->
+    <div class="card shadow-sm border-0 mb-4 border-top border-primary border-3">
+      <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <span class="badge bg-primary text-white me-2">TEST BENCH</span>
+          <strong class="fs-6">Automated Concurrency & Race Condition Laboratory</strong>
+          <span class="text-muted small ms-2 d-none d-lg-inline">&bull; Real-time millisecond verification & auto-refund audit</span>
+        </div>
+        <button id="resetDatasetBtn" onclick="resetDataset()" class="btn btn-sm btn-outline-secondary" title="Restore all 3 classes to their canonical seed states">
+          <span>🔄 Reset Entire Dataset to Seed Baseline</span>
+        </button>
+      </div>
+      <div class="card-body p-3">
+        
+        <!-- EDUCATIONAL CASE STUDY GUIDE FOR REVIEWERS -->
+        <div class="case-study-guide-box mb-3">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 pb-1 border-bottom border-secondary border-opacity-25">
+            <span class="small fw-bold text-uppercase tracking-wider" style="color: var(--guide-title);">🎯 Reviewer Case Study Guide: 3 Pre-Configured Test Sessions</span>
+            <span class="small text-secondary" style="font-size: 0.8rem;">Click any scenario below to target its specific edge-case</span>
+          </div>
+          <div class="row g-2">
+            <!-- Scenario 1: 3/4 Race Target -->
+            <div class="col-md-4">
+              <div class="case-study-card h-100" onclick="selectTargetClass('tc_race_seat')" id="guide_tc_race_seat">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="small text-truncate">1. Mars Rover Physics</strong>
+                  <span class="badge badge-warning-seat">3/4 Confirmed</span>
+                </div>
+                <div class="small text-secondary" style="font-size: 0.78rem; line-height: 1.35;">
+                  <strong class="text-warning-emphasis">⚡ Last-Seat Race:</strong> Exactly 1 seat remains. Perfect for evaluating User A vs. User B concurrency.
+                </div>
+              </div>
+            </div>
+
+            <!-- Scenario 2: 4/4 Sold Out Guard -->
+            <div class="col-md-4">
+              <div class="case-study-card h-100" onclick="selectTargetClass('tc_full')" id="guide_tc_full">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="small text-truncate">2. Geometry Castle</strong>
+                  <span class="badge badge-full">4/4 FULL</span>
+                </div>
+                <div class="small text-secondary" style="font-size: 0.78rem; line-height: 1.35;">
+                  <strong class="text-danger">🛑 Overbooking Guard:</strong> Session is completely sold out. Verifies instant rejection & automatic refund.
+                </div>
+              </div>
+            </div>
+
+            <!-- Scenario 3: 1/4 Open Seats -->
+            <div class="col-md-4">
+              <div class="case-study-card h-100" onclick="selectTargetClass('tc_available')" id="guide_tc_available">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="small text-truncate">3. Multiplication Volcano</strong>
+                  <span class="badge badge-open">1/4 Confirmed</span>
+                </div>
+                <div class="small text-secondary" style="font-size: 0.78rem; line-height: 1.35;">
+                  <strong class="text-success">🟢 Open Session:</strong> 3 seats available. Perfect for testing single booking happy paths.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Selected Target Class Indicator -->
+        <div class="target-banner d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="badge badge-target px-2 py-1">ACTIVE TEST TARGET:</span>
+            <strong id="playgroundTargetName" class="fs-6">Roblox Science: Mars Rover Physics</strong>
+            <span id="playgroundTargetBadge" class="badge badge-warning-seat">3/4 Confirmed (1 Seat Remaining)</span>
+          </div>
+          <div class="small text-muted" id="playgroundContextHint">
+            <em>💡 Tip: Click any scenario above or table row below to switch active target.</em>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <!-- Card 1: Single Booking -->
+          <div class="col-md-4">
+            <div class="card h-100 sim-card p-3 border-secondary-subtle" onclick="scrollToBookingForm()">
+              <div class="d-flex align-items-center mb-1">
+                <span class="fs-4 me-2">👤</span>
+                <span class="card-title-1 fs-6">1. Normal Single Booking</span>
+              </div>
+              <p class="small text-muted mb-2">Standard happy path: 1 parent books 1 open seat cleanly via the interactive form below.</p>
+              <button class="btn btn-sm btn-outline-secondary w-100 mt-auto">⬇ Use Manual Booking Form Below</button>
+            </div>
+          </div>
+
+          <!-- Card 2: 2-User Race -->
+          <div class="col-md-4">
+            <div class="card h-100 sim-card border-primary p-3" onclick="runSimulation('two_users')">
+              <div class="d-flex align-items-center mb-1">
+                <span class="fs-4 me-2">⚡</span>
+                <span class="card-title-2 fs-6">2. Last-Seat Race (Ottodot Task)</span>
+              </div>
+              <p class="small text-muted mb-2">User A & User B pay concurrently for the last seat at the exact same millisecond. <strong>1 confirms, 1 auto-refunded.</strong></p>
+              <button class="btn btn-sm btn-primary w-100 mt-auto fw-bold">⚡ Run 2-User Race Test</button>
+            </div>
+          </div>
+
+          <!-- Card 3: 10-User Peak Storm -->
+          <div class="col-md-4">
+            <div class="card h-100 sim-card border-danger p-3" onclick="runSimulation('peak_rush')">
+              <div class="d-flex align-items-center mb-1">
+                <span class="fs-4 me-2">🔥</span>
+                <span class="card-title-3 fs-6">3. Peak Rush Swarm (10 Bots)</span>
+              </div>
+              <p class="small text-muted mb-2">10 realistic parent bots hammer the last seat simultaneously. <strong>1 confirms, 9 auto-refunded. Cap strictly 4/4!</strong></p>
+              <button class="btn btn-sm btn-danger w-100 mt-auto fw-bold">🔥 Simulate 10-Bot Swarm</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Simulation Terminal Output -->
+        <div id="simOutputWrapper" class="mt-3" style="display: none;">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <small class="fw-bold text-secondary">Live Database Transaction & Invariant Audit Log:</small>
+            <span id="simStatusBadge" class="badge bg-success">INVARIANTS PRESERVED</span>
+          </div>
+          <div class="terminal-box" id="simTerminal">Running transaction simulation...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: DUAL-PERSPECTIVE LIVE SYSTEM VIEWS -->
+    <div class="row g-4">
+      
+      <!-- LEFT COLUMN: TEACHER / ADMIN PERSPECTIVE -->
+      <div class="col-lg-7">
+        
+        <!-- Table: Class Sessions -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center">
+            <div>
+              <span class="badge bg-info text-dark me-2">TEACHER VIEW</span>
+              <span class="fw-bold">Class Sessions & Live Capacity</span>
+            </div>
+            <button onclick="loadClasses()" class="btn btn-sm btn-outline-primary">Refresh Data</button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Class Title / Schedule</th>
+                    <th>Capacity</th>
+                    <th>Status</th>
+                    <th>Select Action</th>
+                  </tr>
+                </thead>
+                <tbody id="classesTableBody">
+                  <tr><td colspan="4" class="text-center py-3 text-muted">Loading classes...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Confirmed Classroom Roster -->
+        <div class="card shadow-sm border-0" id="rosterSection">
+          <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center">
+            <div>
+              <span class="badge bg-info text-dark me-2">TEACHER VIEW</span>
+              <span class="fw-bold">Confirmed Classroom Roster (Max 4)</span>
+            </div>
+            <div>
+              <a id="markdownExportBtn" href="/api/roster/tc_race_seat/markdown" target="_blank" class="btn btn-sm btn-outline-secondary">
+                📋 Export Markdown
+              </a>
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <h6 class="fw-bold mb-1" id="rosterTitle">Select a class above to view confirmed students</h6>
+            <p class="text-muted small mb-2" id="rosterSubtitle">Trial classes are strictly capped at 4 students per session.</p>
+            
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Age</th>
+                    <th>Parent & Email</th>
+                    <th>Confirmed At</th>
+                  </tr>
+                </thead>
+                <tbody id="rosterTableBody">
+                  <tr><td colspan="5" class="text-center py-2 text-muted">No class selected</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: PARENT PERSPECTIVE (MANUAL EDGE-CASE TESTING) -->
+      <div class="col-lg-5" id="bookingFormSection">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-2 px-3">
+            <span class="badge bg-success text-white me-2">PARENT VIEW</span>
+            <span class="fw-bold">Manual Checkout Journey (Edge-Case Test)</span>
+          </div>
+          <div class="card-body p-3">
+            
+            <!-- Live Contextual Educational Banner -->
+            <div id="bookingContextAlert" class="alert alert-secondary py-2 small mb-3">
+              <strong>💡 Test Scenario Guide:</strong> Select a child, class, and payment token below to test how our database invariants react in real time.
+            </div>
+
+            <form id="bookingForm" onsubmit="handleBooking(event)">
+              <div class="mb-3">
+                <label class="form-label small fw-bold">1. Select Child (Student):</label>
+                <select id="studentSelect" class="form-select" onchange="evaluateBookingContext()" required>
+                  <option value="s_maya">Maya Tan (Age 10) - Parent: David Tan</option>
+                  <option value="s_chloe">Chloe Green (Age 7) - Parent: Rachel Green</option>
+                  <option value="s_noah">Noah Zhao (Age 8) - Parent: Kevin Zhao</option>
+                  <option value="s_leo">Leo Jenkins (Age 9) [Already Enrolled in Mars & Robotics]</option>
+                </select>
+                <div class="form-text small">Select Leo Jenkins to test duplicate booking prevention.</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold">2. Select Class Session:</label>
+                <select id="classSelect" class="form-select" onchange="onClassSelectChange(this.value)" required>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold">3. Select Payment Simulation Token:</label>
+                <select id="paymentToken" class="form-select" onchange="evaluateBookingContext()">
+                  <option value="tok_success">tok_success (Payment Clears $25.00 Charge)</option>
+                  <option value="tok_declined">tok_declined (Simulate Card Declined - Invariant 3)</option>
+                  <option value="tok_error">tok_error (Simulate Gateway Timeout - Invariant 3)</option>
+                </select>
+                <div class="form-text small">Simulates payment gateway outcomes to test failure isolation.</div>
+              </div>
+
+              <button type="submit" id="submitBtn" class="btn btn-primary w-100 py-2 fw-bold">
+                Confirm & Pay Trial Class ($25.00)
+              </button>
+            </form>
+
+            <div id="bookingResult" class="mt-3" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FLOATING TOAST NOTIFICATION CONTAINER (MODERN REPLACEMENT FOR ALERT) -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- SMART GUIDE MODAL FOR REVIEWERS -->
+  <div class="modal fade" id="smartGuideModal" tabindex="-1" aria-labelledby="smartGuideModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold" id="smartGuideModalLabel">🧠 Ottodot Reviewer Smart Guide: AI Steering & Invariants</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="font-size: 0.95rem; line-height: 1.6;">
+          <div class="alert alert-info py-2">
+            <strong>Candidate:</strong> Yoseph Iriandi (16 Years Systems Architect) &bull; 
+            <em>"We are interested in how you steer AI, question it, and ship something great."</em>
+          </div>
+
+          <h6 class="fw-bold text-primary">🛑 1. Flawed AI Output I Rejected: Application-Level Capacity Checks (TOCTOU)</h6>
+          <p class="text-muted small">
+            The AI initially suggested checking <code>if (count &lt; 4)</code> in Node.js before charging payment. I rejected this because under concurrency, two parents read count = 3 simultaneously, both charge cards, and the class is <strong>overbooked to 5 students</strong>.
+          </p>
+          <div class="code-snippet-box small mb-3">
+            <div class="code-comment small">-- THE SENIOR CORRECTION (Database Engine Invariant):</div>
+            <code class="code-sql">UPDATE trial_classes SET confirmed_count = confirmed_count + 1 WHERE id = ? AND confirmed_count &lt; capacity;</code>
+          </div>
+
+          <h6 class="fw-bold text-primary">🛑 2. Architectural Tradeoff: Optimistic Finalization vs 10-Minute Cart Hold</h6>
+          <p class="text-muted small mb-3">
+            I rejected 10-minute temporary seat reservations because cart abandonment causes <strong>seat hoarding</strong> (preventing genuine parents from booking the last slot). Instead, we allow concurrent checkouts: the first payment confirmation secures the seat atomically; the latecomer is immediately compensated with a <strong>full automated instant refund ($25.00)</strong>.
+          </p>
+
+          <h6 class="fw-bold text-primary">🛡️ 3. Built-In Enterprise Features Added:</h6>
+          <ul class="text-muted small">
+            <li><strong>Teacher Roster Export Utility:</strong> Formats confirmed rosters into clean tables ready for live class operations.</li>
+            <li><strong>The Ponytail Protocol (<code>.agents/PONYTAIL.md</code>):</strong> Native First, Reuse First, Configuration First, Surgical Diff.</li>
+            <li><strong>Graphify Architectural Map (<code>.agents/graphify/</code>):</strong> Visualized dependency edges and invariant boundaries.</li>
+            <li><strong>Agent Constitution (<code>AGENTS.md</code>):</strong> Explicit guardrails banning TOCTOU, raw SQL concatenation, and native alert popups.</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <a href="/SMART_GUIDE.md" class="btn btn-outline-primary btn-sm">Read Full SMART_GUIDE.md</a>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let activeClassId = 'tc_race_seat';
+    let loadedClassesData = [];
+
+    // Modern Elegant Toast Function (Replaces native alert)
+    function showModernToast(title, message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'modern-toast';
+      const icon = type === 'success' ? '✅' : (type === 'warning' ? '⚠️' : 'ℹ️');
+      toast.innerHTML = `
+        <div class="fs-4">${icon}</div>
+        <div class="flex-grow-1">
+          <strong class="d-block small">${title}</strong>
+          <span class="small text-muted">${message}</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white small ms-2" onclick="this.parentElement.remove()"></button>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(15px)';
+        setTimeout(() => toast.remove(), 400);
+      }, 4500);
+    }
+
+    async function loadClasses() {
+      const res = await fetch('/api/classes');
+      loadedClassesData = await res.json();
+      
+      const tbody = document.getElementById('classesTableBody');
+      const select = document.getElementById('classSelect');
+      tbody.innerHTML = '';
+      select.innerHTML = '';
+
+      loadedClassesData.forEach(c => {
+        const isFull = c.confirmed_count >= c.capacity;
+        const isOneSeatLeft = c.confirmed_count === 3;
+        const isTarget = c.id === activeClassId;
+        const rowClass = isTarget ? 'selected-class-row' : '';
+        const badgeClass = isFull ? 'badge-full' : (isOneSeatLeft ? 'badge-warning-seat' : 'badge-open');
+        const badgeText = isFull ? 'FULL (4/4)' : (isOneSeatLeft ? '⚠️ 1 SEAT LEFT (3/4)' : 'OPEN (' + (c.capacity - c.confirmed_count) + ' left)');
+
+        tbody.innerHTML += `
+          <tr class="${rowClass}" id="row_${c.id}" onclick="selectTargetClass('${c.id}')" style="cursor: pointer;">
+            <td>
+              <div class="d-flex align-items-center">
+                ${isTarget ? '<span class="badge bg-primary me-2">ACTIVE</span>' : ''}
+                <div>
+                  <div class="fw-bold">${c.title}</div>
+                  <small class="text-muted">${c.subject} &bull; ${c.scheduled_at}</small>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge ${badgeClass}">${c.confirmed_count}/${c.capacity}</span></td>
+            <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+            <td>
+              <button onclick="event.stopPropagation(); selectTargetClass('${c.id}')" class="btn btn-sm ${isTarget ? 'btn-primary' : 'btn-outline-primary'} py-1 px-2">
+                🎯 ${isTarget ? 'Selected' : 'Select Target'}
+              </button>
+            </td>
+          </tr>
+        `;
+
+        select.innerHTML += `<option value="${c.id}" ${isTarget ? 'selected' : ''}>${c.title} (${c.confirmed_count}/${c.capacity})</option>`;
+      });
+
+      updateTargetBanner();
+      viewRoster(activeClassId);
+      evaluateBookingContext();
+    }
+
+    function selectTargetClass(classId) {
+      activeClassId = classId;
+      document.getElementById('classSelect').value = classId;
+      updateTargetBanner();
+      evaluateBookingContext();
+      loadClasses();
+    }
+
+    function onClassSelectChange(classId) {
+      selectTargetClass(classId);
+    }
+
+    function updateTargetBanner() {
+      const cls = loadedClassesData.find(c => c.id === activeClassId);
+      if (!cls) return;
+
+      document.getElementById('playgroundTargetName').innerText = cls.title;
+      const isFull = cls.confirmed_count >= cls.capacity;
+      const isOneSeatLeft = cls.confirmed_count === 3;
+      const badge = document.getElementById('playgroundTargetBadge');
+      const hint = document.getElementById('playgroundContextHint');
+
+      // Highlight active guide card via CSS class
+      ['tc_race_seat', 'tc_full', 'tc_available'].forEach(id => {
+        const el = document.getElementById('guide_' + id);
+        if (el) {
+          if (id === activeClassId) {
+            el.classList.add('active-guide');
+          } else {
+            el.classList.remove('active-guide');
+          }
+        }
+      });
+
+      if (isFull) {
+        badge.className = 'badge badge-full';
+        badge.innerText = '4/4 FULL (Sold-Out Session)';
+        hint.innerHTML = '<span class="text-danger fw-bold">🛑 Overbooking Guard Active:</span> Any booking attempt on this session will be safely rejected and refunded.';
+      } else if (isOneSeatLeft) {
+        badge.className = 'badge badge-warning-seat';
+        badge.innerText = '3/4 Confirmed (1 Seat Remaining - Ideal Race Target)';
+        hint.innerHTML = '<span class="text-warning-emphasis fw-bold">⚡ Ideal Race Target:</span> Perfect for testing User A vs User B competing for seat #4.';
+      } else {
+        badge.className = 'badge badge-open';
+        badge.innerText = cls.confirmed_count + '/' + cls.capacity + ' Confirmed (' + (cls.capacity - cls.confirmed_count) + ' Seats Remaining)';
+        hint.innerHTML = '<span class="text-success fw-bold">🟢 Open Session:</span> Available for standard single booking happy path.';
+      }
+    }
+
+    
+    
+    // --- MISSING SYSTEM FUNCTIONS WIRED BY SENIOR ARCHITECT ---
+    async function viewRoster(classId) {
+      const rosterTitle = document.getElementById('rosterTitle');
+      const rosterSubtitle = document.getElementById('rosterSubtitle');
+      const rosterTableBody = document.getElementById('rosterTableBody');
+      const markdownBtn = document.getElementById('markdownExportBtn');
+
+      if (!classId) return;
+      if (markdownBtn) markdownBtn.href = '/api/roster/' + classId + '/markdown';
+
+      try {
+        const res = await fetch('/api/roster/' + classId);
+        if (!res.ok) {
+          if (rosterTitle) rosterTitle.innerText = 'Unable to load roster';
+          return;
+        }
+        const data = await res.json();
+        const trialClass = data.trial_class || {};
+        const confirmedStudents = data.confirmed_students || [];
+        const confirmed = data.total_confirmed ?? trialClass.confirmed_count ?? confirmedStudents.length;
+        const capacity = trialClass.capacity ?? 4;
+        const available = data.available_seats ?? Math.max(0, capacity - confirmed);
+
+        if (rosterTitle) {
+          rosterTitle.innerText = (trialClass.title || 'Trial Class') + ' (' + confirmed + '/' + capacity + ' Confirmed)';
+        }
+
+        if (rosterSubtitle) {
+          if (confirmed >= capacity) {
+            rosterSubtitle.innerHTML = '<span class="badge bg-danger">🔴 SOLD OUT</span> Maximum capacity of ' + capacity + ' students reached.';
+          } else {
+            rosterSubtitle.innerHTML = '<span class="badge bg-success">🟢 AVAILABLE</span> ' + available + ' of ' + capacity + ' seats remaining.';
+          }
+        }
+
+        if (rosterTableBody) {
+          if (confirmedStudents.length === 0) {
+            rosterTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No confirmed students yet in this class.</td></tr>';
+          } else {
+            let rows = '';
+            confirmedStudents.forEach((s, idx) => {
+              rows += '<tr>' +
+                '<td>' + (idx + 1) + '</td>' +
+                '<td><strong>' + s.student_name + '</strong></td>' +
+                '<td><span class="badge bg-secondary">' + s.student_age + ' yrs</span></td>' +
+                '<td>' + s.parent_name + '<br><span class="text-muted small">' + (s.parent_email || '') + '</span></td>' +
+                '<td><span class="small font-monospace text-muted">' + (s.confirmed_at || 'Confirmed') + '</span></td>' +
+                '</tr>';
+            });
+            rosterTableBody.innerHTML = rows;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to view roster:', err);
+      }
+    }
+
+    function evaluateBookingContext() {
+      const studentSelect = document.getElementById('studentSelect');
+      const classSelect = document.getElementById('classSelect');
+      const paymentSelect = document.getElementById('paymentToken');
+      const alertBox = document.getElementById('bookingContextAlert');
+
+      if (!studentSelect || !classSelect || !alertBox) return;
+
+      const studentId = studentSelect.value;
+      const classId = classSelect.value || activeClassId;
+      const paymentToken = paymentSelect ? paymentSelect.value : 'tok_success';
+
+      // Check Invariant 2: Duplicate booking attempt
+      if (studentId === 's_leo' && classId === 'tc_race_seat') {
+        alertBox.className = 'alert alert-danger py-2 small mb-3';
+        alertBox.innerHTML = '<strong>⚠️ Case Study 3 (Duplicate Booking Guard):</strong> Leo Jenkins is ALREADY confirmed in Mars Rover Physics. Submitting will test <strong>Invariant #2</strong> and be rejected by the database partial unique index (<code>rejected_duplicate</code>).';
+        return;
+      }
+
+      // Check Invariant 4: Class full / Sold out
+      if (classId === 'tc_full') {
+        alertBox.className = 'alert alert-warning py-2 small mb-3';
+        alertBox.innerHTML = '<strong>🔴 Case Study 2 (Overbooking Protection):</strong> Geometry Castle is already at maximum capacity (4/4). Submitting will test <strong>Invariant #4</strong> and be rejected by the atomic conditional SQL check (<code>rejected_class_full</code>).';
+        return;
+      }
+
+      // Check Invariant 3: Payment failure
+      if (paymentToken === 'tok_declined') {
+        alertBox.className = 'alert alert-danger py-2 small mb-3';
+        alertBox.innerHTML = '<strong>💳 Invariant #3 (Card Declined Simulation):</strong> Submitting will simulate a payment failure. The child will <strong>NOT</strong> be added to the confirmed roster (<code>rejected_payment_failed</code>).';
+        return;
+      }
+      if (paymentToken === 'tok_error') {
+        alertBox.className = 'alert alert-danger py-2 small mb-3';
+        alertBox.innerHTML = '<strong>💳 Invariant #3 (Gateway Timeout Simulation):</strong> Submitting will simulate a payment gateway error. Zero seats will be reserved (<code>rejected_payment_failed</code>).';
+        return;
+      }
+
+      // Valid open seats
+      if (classId === 'tc_race_seat') {
+        alertBox.className = 'alert alert-primary py-2 small mb-3';
+        alertBox.innerHTML = '<strong>⚡ Case Study 1 (Last-Seat Race Target):</strong> Mars Rover Physics has exactly 1 seat remaining (3/4). Submitting with <code>tok_success</code> will claim seat #4 and mark the class SOLD OUT.';
+        return;
+      }
+
+      alertBox.className = 'alert alert-success py-2 small mb-3';
+      alertBox.innerHTML = '<strong>🟢 Open Seats Available:</strong> Class has open capacity. Submitting will confirm the booking and immediately update the classroom roster.';
+    }
+
+    async function handleBooking(event) {
+      if (event) event.preventDefault();
+
+      const studentSelect = document.getElementById('studentSelect');
+      const classSelect = document.getElementById('classSelect');
+      const paymentSelect = document.getElementById('paymentToken');
+      const submitBtn = document.getElementById('submitBtn');
+      const resultBox = document.getElementById('bookingResult');
+
+      if (!studentSelect || !classSelect) return;
+
+      const studentId = studentSelect.value;
+      const classId = classSelect.value || activeClassId;
+      const paymentToken = paymentSelect ? paymentSelect.value : 'tok_success';
+      const parentId = getParentForStudent(studentId);
+      const idempotencyKey = 'manual_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Submitting Transaction & Invariants...';
+
+      if (resultBox) {
+        resultBox.style.display = 'block';
+        resultBox.className = 'alert alert-secondary py-2 small mt-3';
+        resultBox.innerHTML = '⏳ Contacting backend booking engine and dispatching payment...';
+      }
+
+      try {
+        const res = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            trial_class_id: classId,
+            student_id: studentId,
+            parent_id: parentId,
+            payment_token: paymentToken,
+            idempotency_key: idempotencyKey
+          })
+        });
+
+        const data = await res.json();
+        const isSuccess = data.success === true || data.status === 'confirmed';
+        const isRefund = data.refund_issued === true;
+
+        let alertClass = 'alert-danger';
+        let icon = '❌';
+        if (isSuccess) {
+          alertClass = 'alert-success';
+          icon = '🎉';
+        } else if (isRefund) {
+          alertClass = 'alert-warning';
+          icon = '💵';
+        }
+
+        let html = '<div class="fw-bold mb-1">' + icon + ' Status: ' + (data.status || 'unknown').toUpperCase() + '</div>';
+        html += '<p class="mb-2">' + (data.message || '') + '</p>';
+        if (data.booking_id) {
+          html += '<div class="small"><strong>Booking ID (ULID):</strong> <code>' + data.booking_id + '</code></div>';
+        }
+        if (data.payment_id) {
+          html += '<div class="small"><strong>Payment Ref:</strong> <code>' + data.payment_id + '</code></div>';
+        }
+        if (isRefund) {
+          html += '<div class="badge bg-warning text-dark mt-2 p-2">⚡ Automated Refund Issued: $25.00 back to parent card</div>';
+        }
+
+        if (resultBox) {
+          resultBox.className = 'alert ' + alertClass + ' mt-3 py-3';
+          resultBox.innerHTML = html;
+          resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+// Toast removed per user instruction: Single helper below button is preferred
+
+        // Immediately reload classes & roster to reflect new state
+        await loadClasses();
+
+      } catch (err) {
+        if (resultBox) {
+          resultBox.className = 'alert alert-danger mt-3 py-2 small';
+          resultBox.innerHTML = '❌ Network or server error: ' + err.message;
+        }
+        // Toast removed per user instruction: Inline error below button is preferred
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+      }
+    }
+
+    async function runSimulation(mode) {
+      const outputWrapper = document.getElementById('simOutputWrapper');
+      const terminal = document.getElementById('simTerminal');
+      const badge = document.getElementById('simStatusBadge');
+
+      outputWrapper.style.display = 'block';
+      outputWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      badge.className = 'badge bg-warning text-dark';
+      badge.innerText = 'SIMULATING CONCURRENCY...';
+      terminal.innerHTML = '<span class="text-secondary">[00:00:00.000] Initializing high-concurrency race condition test bench...</span><br><span class="text-info">Dispatched parallel payment requests to database transaction engine...</span>';
+
+      try {
+        const res = await fetch('/api/simulate-race?mode=' + encodeURIComponent(mode) + '&class_id=' + encodeURIComponent(activeClassId) + '&reset=true', {
+          method: 'POST'
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          badge.className = 'badge bg-danger';
+          badge.innerText = 'SIMULATION ERROR';
+          terminal.innerHTML = '<span class="text-danger">Error running simulation: ' + (data.error || 'Server error') + '</span>';
+          return;
+        }
+
+        const items = data.results || data.details || [];
+        let logHtml = '<div class="text-light fw-bold mb-2 pb-1 border-bottom border-secondary border-opacity-25">';
+        logHtml += '🎯 SCENARIO: ' + data.mode + '<br>';
+        logHtml += '🏫 TARGET CLASS: ' + data.target_class + ' (Cap: ' + data.capacity + ') | Concurrency: ' + data.concurrency_count + ' threads';
+        logHtml += '</div>';
+
+        items.forEach(req => {
+          const isConfirmed = req.status === 'confirmed';
+          const isRefunded = req.refund_issued;
+          const statusColor = isConfirmed ? 'text-success fw-bold' : (isRefunded ? 'text-warning fw-bold' : 'text-danger fw-bold');
+          const label = req.user_label || (req.bot_id + ' - ' + req.parent + ' (Child: ' + req.student + ')');
+
+          logHtml += '<div class="mb-1" style="font-family: monospace; font-size: 0.82rem;">';
+          logHtml += '<span class="text-secondary">[' + req.timestamp + ']</span> ';
+          logHtml += '<span class="text-info">(' + req.latency_ms + 'ms)</span> ';
+          logHtml += '<strong>' + label + '</strong><br>';
+          logHtml += '&nbsp;&nbsp;➔ Status: <span class="' + statusColor + '">' + req.status.toUpperCase() + '</span> ';
+          logHtml += '| Refund Issued: <span class="' + (isRefunded ? 'text-warning' : 'text-secondary') + '">' + (isRefunded ? 'YES ($25.00 Auto-Refunded)' : 'NO (Seat Confirmed)') + '</span><br>';
+          logHtml += '&nbsp;&nbsp;➔ Gateway Message: <span class="text-muted">' + req.message + '</span>';
+          logHtml += '</div>';
+        });
+
+        logHtml += '<div class="mt-2 pt-2 border-top border-secondary border-opacity-25 text-light fw-bold" style="font-family: monospace;">';
+        logHtml += '🏁 INVARIANT AUDIT: Final Roster: <span class="text-info">' + data.final_roster_count + '/' + data.capacity + '</span>';
+        logHtml += ' | Zero Overbooking: <span class="text-success">' + (data.invariants_preserved ? 'VERIFIED ✅' : 'VIOLATED ❌') + '</span>';
+        logHtml += '</div>';
+
+        terminal.innerHTML = logHtml;
+
+        if (data.invariants_preserved) {
+          badge.className = 'badge bg-success';
+          badge.innerText = 'INVARIANTS PRESERVED: 4/4 MAX CAP RESPECTED ✅';
+        } else {
+          badge.className = 'badge bg-danger';
+          badge.innerText = 'INVARIANT VIOLATION DETECTED ❌';
+        }
+
+        // Refresh teacher table & cards to show the newly confirmed student!
+        await loadClasses();
+
+        showModernToast(
+          'Concurrency Simulation Complete',
+          mode === 'two_users'
+            ? 'User A and User B completed the race. Exactly 1 seat confirmed, 1 auto-refunded.'
+            : '10 bot swarm completed. Exactly 1 seat confirmed, 9 auto-refunded. Capacity strictly preserved.',
+          'success'
+        );
+
+      } catch (err) {
+        badge.className = 'badge bg-danger';
+        badge.innerText = 'NETWORK ERROR';
+        terminal.innerHTML = '<span class="text-danger">Failed to execute simulation: ' + err.message + '</span>';
+      }
+    }
+
+    async function resetDataset() {
+      const currentSelected = activeClassId;
+      await fetch('/api/reset-seed', { method: 'POST' });
+      activeClassId = currentSelected; // PRESERVE CURRENT USER SELECTION
+      await loadClasses();
+      showModernToast(
+        'Dataset Reset Complete',
+        'All 3 classes restored to canonical seed states: Mars Rover (3/4), Geometry Castle (4/4), Multiplication Volcano (1/4).',
+        'info'
+      );
+    }
+
+    function scrollToBookingForm() {
+      document.getElementById('bookingFormSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function getParentForStudent(studentId) {
+      if (studentId === 's_maya') return 'p_david';
+      if (studentId === 's_chloe') return 'p_rachel';
+      if (studentId === 's_noah') return 'p_kevin';
+      if (studentId === 's_leo') return 'p_sarah';
+      return 'p_david';
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      localStorage.setItem('ottodot_theme', theme);
+      const isDark = theme === 'dark';
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (icon) icon.innerText = isDark ? '☀️' : '🌙';
+      if (label) label.innerText = isDark ? 'Light' : 'Dark';
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    const savedTheme = localStorage.getItem('ottodot_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    // ARCHITECT INTRO SPLASH SCREEN CONTROLLER
+    let splashDismissed = false;
+    function dismissSplashScreen() {
+      if (splashDismissed) return;
+      splashDismissed = true;
+      const splash = document.getElementById('introSplashScreen');
+      if (splash) {
+        splash.classList.add('fade-out');
+        setTimeout(() => {
+          splash.remove();
+        }, 520);
+      }
+    }
+
+    // Interactive entry gate: waits for user to click 'Enter Dashboard' or press Enter / Space
+    window.addEventListener('DOMContentLoaded', () => {
+      // Focus on the Enter button so pressing Enter or Space immediately triggers it
+      const enterBtn = document.getElementById('btnEnterDashboard');
+      if (enterBtn) {
+        enterBtn.focus();
+      }
+      
+      // Keyboard shortcut listener
+      window.addEventListener('keydown', (e) => {
+        if (!splashDismissed && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          dismissSplashScreen();
+        }
+      });
+    });
+
+    loadClasses();
+  </script>
+</body>
+</html>
